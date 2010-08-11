@@ -80,7 +80,6 @@ module Padrino
       app.set :auth_error_message,   "Could not log you in."
       app.set :auth_success_message, "You have logged in successfully."
       app.set :auth_login_template, 'sessions/login'
-      app.set :auth_layout, nil
       # OAuth Specific Settings
       app.set :auth_use_oauth, false
       app.set :auth_use_layout, false
