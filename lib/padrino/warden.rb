@@ -52,15 +52,15 @@ module Padrino
       end
       alias_method :current_user=, :user=
 
-      # Require authorization for an action
-      #
-      # @param [String] path to redirect to if user is unauthenticated
-      def authorize!(failure_path=nil)
-        unless authenticated?
-          session[:return_to] = request.path if options.auth_use_referrer
-          redirect(failure_path ? failure_path : options.auth_failure_path)
+        # Require authorization for an action
+        #
+        # @param [String] path to redirect to if user is unauthenticated
+        def authorize!(failure_path=nil)
+          unless authenticated?
+            session[:return_to] = request.path if options.auth_use_referrer
+            redirect(failure_path ? failure_path : options.auth_failure_path)
+          end
         end
-      end
 
     end
 
@@ -83,10 +83,10 @@ module Padrino
       app.set :auth_use_layout, false
 
       app.use ::Warden::Manager do |manager|
-          manager.default_strategies :password
-          manager.failure_app = app
+        manager.default_strategies :password
+        manager.failure_app = app
       end
-      
+
       app.controller :sessions do
         post :unauthenticated do
           status 401
@@ -101,7 +101,7 @@ module Padrino
             session[:request_token_secret] = @auth_oauth_request_token.secret
             redirect @auth_oauth_request_token.authorize_url
           else
-              render options.auth_login_template, :layout => options.auth_use_layout
+            render options.auth_login_template, :layout => options.auth_use_layout
           end
         end
 
@@ -119,7 +119,7 @@ module Padrino
           authenticate
           env['x-rack.flash'][:success] = options.auth_success_message if defined?(Rack::Flash)
           redirect options.auth_use_referrer && session[:return_to] ? session.delete(:return_to) : 
-                   options.auth_success_path
+            options.auth_success_path
         end
 
         get :logout do
