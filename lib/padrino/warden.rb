@@ -80,7 +80,8 @@ module Padrino
       app.set :auth_login_template, 'sessions/login'
       # OAuth Specific Settings
       app.set :auth_use_oauth, false
-      
+      app.set :auth_use_layout, false
+
       app.use ::Warden::Manager do |manager|
           manager.default_strategies :password
           manager.failure_app = app
@@ -91,7 +92,7 @@ module Padrino
           status 401
           warden.custom_failure! if warden.config.failure_app == self.class
           env['x-rack.flash'][:error] = options.auth_error_message if defined?(Rack::Flash)
-          render options.auth_login_template
+          render options.auth_login_template, :layout => options.auth_use_layout
         end
 
         get :login do
@@ -100,7 +101,7 @@ module Padrino
             session[:request_token_secret] = @auth_oauth_request_token.secret
             redirect @auth_oauth_request_token.authorize_url
           else
-            render options.auth_login_template
+              render options.auth_login_template, :layout => options.auth_use_layout
           end
         end
 
