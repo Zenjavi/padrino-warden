@@ -91,11 +91,10 @@ module Padrino
 
       app.controller :sessions do
         post :unauthenticated do
-          status 401
+          #status 401
           warden.custom_failure! if warden.config.failure_app == self.class
           env['x-rack.flash'][:error] = options.auth_error_message if defined?(Rack::Flash)
-          #render options.auth_login_template, :layout => options.auth_use_layout
-          redirect options.auth_login_path
+          render options.auth_login_template, :layout => options.auth_use_layout
         end
 
         get :login, :map => app.auth_login_path do
