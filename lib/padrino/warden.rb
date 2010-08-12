@@ -90,7 +90,7 @@ module Padrino
       end
 
       app.controller :sessions do
-        post :unauthenticated do
+        delete :unauthenticated do
           status 401
           warden.custom_failure! if warden.config.failure_app == self.class
           env['x-rack.flash'][:error] = options.auth_error_message if defined?(Rack::Flash)
@@ -120,7 +120,7 @@ module Padrino
         post :login, :map => app.auth_login_path do
           authenticate
           env['x-rack.flash'][:success] = options.auth_success_message if defined?(Rack::Flash)
-          redirect options.auth_use_referrer && session[:return_to] ? session.post(:return_to) :
+          redirect options.auth_use_referrer && session[:return_to] ? session.delete(:return_to) :
                    options.auth_success_path
         end
 
