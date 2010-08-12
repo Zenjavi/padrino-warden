@@ -73,6 +73,8 @@ module Padrino
       app.set :auth_logout_path, '/logout'
       app.set :auth_failure_path, '/'
       app.set :auth_success_path, '/'
+      app.set :auth_unauth_path, '/unauthenticated'
+
       # Setting this to true will store last request URL
       # into a user's session so that to redirect back to it
       # upon successful authentication
@@ -90,7 +92,7 @@ module Padrino
       end
 
       app.controller :sessions do
-        post :unauthenticated do
+        post :unauthenticated, :map => app.auth_unauth_path do
           status 401
           warden.custom_failure! if warden.config.failure_app == self.class
           env['x-rack.flash'][:error] = options.auth_error_message if defined?(Rack::Flash)
