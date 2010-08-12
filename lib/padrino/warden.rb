@@ -94,7 +94,8 @@ module Padrino
           status 401
           warden.custom_failure! if warden.config.failure_app == self.class
           env['x-rack.flash'][:error] = options.auth_error_message if defined?(Rack::Flash)
-          render options.auth_login_template, :layout => options.auth_use_layout
+          #render options.auth_login_template, :layout => options.auth_use_layout
+          redirect options.auth_login_path
         end
 
         get :login, :map => app.auth_login_path do
