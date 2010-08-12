@@ -90,7 +90,7 @@ module Padrino
       end
 
       app.controller :sessions do
-        delete :unauthenticated do
+        post :unauthenticated do
           status 401
           warden.custom_failure! if warden.config.failure_app == self.class
           env['x-rack.flash'][:error] = options.auth_error_message if defined?(Rack::Flash)
