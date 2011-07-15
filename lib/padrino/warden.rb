@@ -11,7 +11,7 @@ module Padrino
       #
       # @param [Symbol] the scope to retrieve session info for
       def session_info(scope=nil)
-        scope ? warden.session(scope) : scope
+        scope ? warden.session(scope) : warden.session
       end
 
       # Check the current session is authenticated to a given scope
@@ -55,12 +55,12 @@ module Padrino
         # Require authorization for an action
         #
         # @param [String] path to redirect to if user is unauthenticated
-        def authorize!(failure_path=nil)
-          unless authenticated?
-            session[:return_to] = request.path if options.auth_use_referrer
-            redirect(failure_path ? failure_path : options.auth_failure_path)
-          end
+      def authorize!(failure_path=nil)
+        unless authenticated?
+          session[:return_to] = request.path if options.auth_use_referrer && request.path != options.auth_logout_path
+          redirect(failure_path ? failure_path : options.auth_failure_path)
         end
+      end
 
     end
 
@@ -85,13 +85,15 @@ module Padrino
       # OAuth Specific Settings
       app.set :auth_use_oauth, false
       app.set :auth_use_layout, false
+      app.set :auth_default_strategies, :password unless app.respond_to? :auth_default_strategies
 
       app.use ::Warden::Manager do |manager|
-        manager.default_strategies :remember_me, :password
+        manager.default_strategies app.auth_default_strategies
         manager.failure_app = app
       end
 
       app.controller :sessions do
+
         post :unauthenticated, :map => app.auth_unauth_path do
           status 401
           warden.custom_failure! if warden.config.failure_app == self.class
@@ -122,8 +124,7 @@ module Padrino
         post :login, :map => app.auth_login_path do
           authenticate
           env['x-rack.flash'][:success] = options.auth_success_message if defined?(Rack::Flash)
-          redirect options.auth_use_referrer && session[:return_to] ? session.delete(:return_to) :
-                   options.auth_success_path
+          redirect options.auth_use_referrer && session[:return_to] ? session.delete(:return_to) : options.auth_success_path
         end
 
         get :logout, :map => app.auth_logout_path do
