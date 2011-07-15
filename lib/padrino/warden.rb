@@ -87,7 +87,7 @@ module Padrino
       app.set :auth_use_layout, false
 
       app.use ::Warden::Manager do |manager|
-        manager.default_strategies :password
+        manager.default_strategies :remember_me, :password
         manager.failure_app = app
       end
 
